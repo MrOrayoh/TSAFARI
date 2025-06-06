@@ -1,19 +1,20 @@
-<!-- templates/core/home.html -->
 {% extends "base.html" %}
+{% load static %}
+
 {% block title %}Welcome - TSafari{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'motorbike/css/styles.css' %}">
+{% endblock %}
+
 {% block content %}
-<section class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
-  <div class="text-center p-8">
-    <h1 class="text-4xl font-bold text-blue-800 mb-4">Welcome to TSafari</h1>
-    <p class="text-gray-700 text-lg mb-8">Find reliable bodaboda, pickup, or lorry transport instantly.</p>
-    <div class="space-x-4">
-      <a href="{% url 'login' %}" class="bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition">
-        Login
-      </a>
-      <a href="{% url 'register' %}" class="bg-gray-200 text-blue-800 px-6 py-2 rounded-xl hover:bg-gray-300 transition">
-        Register
-      </a>
+<section class="welcome-bg">
+  <div class="welcome-box">
+    <h1>Welcome to TSafari</h1>
+    <p>Find reliable bodaboda, pickup, or lorry transport instantly.</p>
+    <div class="welcome-buttons">
+      <a href="{% url 'login' %}" class="login">Login</a>
+      <a href="{% url 'register' %}" class="register">Register</a>
     </div>
   </div>
 </section>
