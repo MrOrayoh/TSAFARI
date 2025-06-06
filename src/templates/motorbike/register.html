@@ -1,38 +1,40 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Register - TSafari{% endblock %}
 
 {% block content %}
-<section class="min-h-screen flex items-center justify-center bg-gray-50">
-  <div class="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
-    <h2 class="text-2xl font-bold text-center text-blue-700 mb-6">Create Your Account</h2>
+<link rel="stylesheet" href="{% static 'motorbike/css/register.css' %}">
+
+<section class="register-bg">
+  <div class="register-container">
+    <h2 class="register-title">Create Your Account</h2>
     
     <form method="POST" action="#">
-      <!-- CSRF Token (when using backend later) -->
       <!-- {% csrf_token %} -->
 
-      <div class="mb-4">
-        <label for="name" class="block text-sm font-semibold text-gray-700">Full Name</label>
-        <input type="text" id="name" name="name" class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-blue-200">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" required>
       </div>
 
-      <div class="mb-4">
-        <label for="email" class="block text-sm font-semibold text-gray-700">Email Address</label>
-        <input type="email" id="email" name="email" class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-blue-200">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" required>
       </div>
 
-      <div class="mb-4">
-        <label for="phone" class="block text-sm font-semibold text-gray-700">Phone Number</label>
-        <input type="tel" id="phone" name="phone" class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-blue-200">
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" name="phone" required>
       </div>
 
-      <div class="mb-4">
-        <label for="password" class="block text-sm font-semibold text-gray-700">Password</label>
-        <input type="password" id="password" name="password" class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-blue-200">
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
       </div>
 
-      <div class="mb-6">
-        <label for="role" class="block text-sm font-semibold text-gray-700">Register As</label>
-        <select id="role" name="role" class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-blue-200">
+      <div class="form-group">
+        <label for="role">Register As</label>
+        <select id="role" name="role" required>
           <option value="">-- Select Role --</option>
           <option value="bodaboda">Bodaboda Rider</option>
           <option value="pickup">Pickup Driver</option>
@@ -40,14 +42,12 @@
         </select>
       </div>
 
-      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
-        Register
-      </button>
+      <button type="submit" class="submit-btn">Register</button>
     </form>
 
-    <p class="mt-4 text-center text-sm text-gray-600">
+    <p class="register-footer">
       Already have an account?
-      <a href="{% url 'login' %}" class="text-blue-600 hover:underline">Login</a>
+      <a href="{% url 'login' %}">Login</a>
     </p>
   </div>
 </section>
