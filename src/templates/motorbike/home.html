@@ -12,9 +12,15 @@
   <div class="welcome-box">
     <h1>Welcome to TSafari</h1>
     <p>Find reliable bodaboda, pickup, or lorry transport instantly.</p>
+    
     <div class="welcome-buttons">
       <a href="{% url 'login' %}" class="login">Login</a>
       <a href="{% url 'register' %}" class="register">Register</a>
+    </div>
+
+    <div class="continue-customer">
+      <p class="continue-text">Just need a delivery or ride?</p>
+      <a href="{% url 'booking' %}" class="continue-btn">Continue as Customer</a>
     </div>
   </div>
 </section>

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Driver Dashboard - TSafari{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'motorbike/css/driver_dashboard.css' %}">
+
+<section class="dashboard-bg">
+  <div class="dashboard-container">
+    <h2 class="dashboard-title">Welcome, {{ driver_name }}</h2>
+    <p class="dashboard-description">Manage your availability and view service requests here.</p>
+
+    <div class="availability-section">
+      <label class="availability-toggle">
+        <input type="checkbox" id="availabilityCheckbox" onchange="toggleAvailability(this)">
+        <span class="slider"></span>
+      </label>
+      <span id="availabilityText">Currently: <strong>Unavailable</strong></span>
+    </div>
+
+    <div id="locationStatus" class="location-status hidden">
+      📍 Your location is being shared with customers.
+    </div>
+
+    <div class="summary-box">
+      <h3>Today's Summary</h3>
+      <p>Rides Completed: 0</p>
+      <p>Earnings: KES 0.00</p>
+      <p>Pending Requests: 0</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  function toggleAvailability(checkbox) {
+    const text = document.getElementById("availabilityText");
+    const locationStatus = document.getElementById("locationStatus");
+
+    if (checkbox.checked) {
+      text.innerHTML = 'Currently: <strong class="text-green">Available</strong>';
+      locationStatus.classList.remove('hidden');
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            console.log("Lat:", position.coords.latitude);
+            console.log("Lng:", position.coords.longitude);
+            // Optionally send location to backend here
+          },
+          (error) => {
+            alert("Location access denied.");
+            checkbox.checked = false;
+            toggleAvailability(checkbox);
+          }
+        );
+      } else {
+        alert("Geolocation not supported by this browser.");
+      }
+    } else {
+      text.innerHTML = 'Currently: <strong>Unavailable</strong>';
+      locationStatus.classList.add('hidden');
+    }
+  }
+</script>
+{% endblock %}

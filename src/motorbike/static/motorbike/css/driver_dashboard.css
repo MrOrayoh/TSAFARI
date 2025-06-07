@@ -1,0 +1,109 @@
+.dashboard-bg {
+  min-height: 180vh;
+  background-image: url('/static/motorbike/images/welcome-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashboard-container {
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 2rem;
+  border-radius: 1rem;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1D4ED8;
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-description {
+  color: #4B5563;
+  margin-bottom: 2rem;
+}
+
+.availability-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.availability-toggle {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 32px;
+}
+
+.availability-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0;
+  right: 0; bottom: 0;
+  background-color: #ccc;
+  border-radius: 34px;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 24px;
+  width: 24px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #1D4ED8;
+}
+
+input:checked + .slider:before {
+  transform: translateX(28px);
+}
+
+#availabilityText {
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.text-green {
+  color: #10B981;
+}
+
+.location-status {
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  color: #1F2937;
+}
+
+.hidden {
+  display: none;
+}
+
+.summary-box {
+  text-align: left;
+  margin-top: 1.5rem;
+  background: #F3F4F6;
+  padding: 1rem;
+  border-radius: 0.75rem;
+}

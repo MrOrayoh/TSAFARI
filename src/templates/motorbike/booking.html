@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Book Transport - TSafari{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'motorbike/css/booking.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="booking-bg">
+  <div class="booking-box">
+    <h2>Find Nearby Transport</h2>
+    <form method="GET" action="#">
+      <label for="location">Enter Your Location:</label>
+      <input type="text" id="location" name="location" placeholder="e.g. Nairobi West" required>
+      <button type="submit">Check Availability</button>
+    </form>
+
+    <div class="transport-results">
+      <h3>Available Drivers</h3>
+      <!-- These should be dynamically generated from backend later -->
+      <div class="transport-card available">
+        <h4>Bodaboda Rider</h4>
+        <p>Plate: KMC 223B</p>
+        <p>Status: <span class="status">Available</span></p>
+      </div>
+
+      <div class="transport-card unavailable">
+        <h4>Pickup Driver</h4>
+        <p>Plate: KDD 998M</p>
+        <p>Status: <span class="status">Unavailable</span></p>
+      </div>
+
+      <!-- More driver entries will be added dynamically -->
+    </div>
+  </div>
+</section>
+{% endblock %}

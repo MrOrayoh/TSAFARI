@@ -9,3 +9,9 @@ def login(request):
 
 def register(request):
     return render(request, 'motorbike/register.html')
+
+def driver_dashboard(request):
+    return render(request, 'motorbike/driver_dashboard.html')
+
+def booking(request):
+    return render(request, 'motorbike/booking.html')
