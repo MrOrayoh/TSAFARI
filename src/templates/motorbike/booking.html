@@ -19,20 +19,27 @@
 
     <div class="transport-results">
       <h3>Available Drivers</h3>
-      <!-- These should be dynamically generated from backend later -->
-      <div class="transport-card available">
-        <h4>Bodaboda Rider</h4>
-        <p>Plate: KMC 223B</p>
-        <p>Status: <span class="status">Available</span></p>
-      </div>
 
-      <div class="transport-card unavailable">
-        <h4>Pickup Driver</h4>
-        <p>Plate: KDD 998M</p>
-        <p>Status: <span class="status">Unavailable</span></p>
+      <!-- Driver Card Loop (example static, replace with dynamic data) -->
+      <div class="driver-grid">
+        {% for driver in available_drivers %}
+        <div class="driver-card">
+          <img src="{{ driver.photo_url|default:'/static/motorbike/images/default_driver.png' }}" alt="Driver Photo" class="driver-photo">
+          <h4>{{ driver.name }}</h4>
+          <p><strong>Transport:</strong> {{ driver.role|title }}</p>
+          <p><strong>Plate:</strong> {{ driver.number_plate }}</p>
+          <p><strong>Sacco:</strong> {{ driver.sacco }}</p>
+          <p><strong>Stage:</strong> {{ driver.stage }}</p>
+          <p><strong>Rating:</strong> {{ driver.rating|default:"4.5" }}/5 ⭐</p>
+          <p><strong>Distance:</strong> ~2.3 km away</p>
+          <form action="{% url 'choose_trip' driver.id %}" method="GET">
+            <button type="submit" class="select-btn">Select</button>
+          </form>
+        </div>
+        {% empty %}
+        <p>No available drivers around your location at this moment.</p>
+        {% endfor %}
       </div>
-
-      <!-- More driver entries will be added dynamically -->
     </div>
   </div>
 </section>

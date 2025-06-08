@@ -15,3 +15,6 @@ def driver_dashboard(request):
 
 def booking(request):
     return render(request, 'motorbike/booking.html')
+
+def trip_booking(request):
+    return render(request, 'motorbike/trip_booking.html')
