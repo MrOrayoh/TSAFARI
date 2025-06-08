@@ -9,12 +9,12 @@
   <div class="register-container">
     <h2 class="register-title">Create Your Account</h2>
     
-    <form method="POST" action="#">
-      <!-- {% csrf_token %} -->
+    <form method="POST" action="{% url 'register_driver' %}" enctype="multipart/form-data">
+      {% csrf_token %}
 
       <div class="form-group">
-        <label for="name">Full Name</label>
-        <input type="text" id="name" name="name" required>
+        <label for="full_name">Full Name</label>
+        <input type="text" id="full_name" name="full_name" required>
       </div>
 
       <div class="form-group">
@@ -32,6 +32,10 @@
         <input type="text" id="number_plate" name="number_plate" placeholder="e.g., KDA 123A">
       </div>
 
+      <div class="form-group">
+        <label for="profile_picture">Profile Picture</label>
+        <input type="file" id="profile_picture" name="profile_picture" accept="image/*">
+      </div>
 
       <div class="form-group">
         <label for="county">County</label>
@@ -94,12 +98,17 @@
 
       <div class="form-group">
         <label for="stage">Stage</label>
-        <input type="text" id="stage" name="sacco">
+        <input type="text" id="stage" name="stage">
       </div>
 
       <div class="form-group">
         <label for="password">Password</label>
         <input type="password" id="password" name="password" required>
+      </div>
+
+      <div class="form-group">
+        <label for="confirm_password">Confirm Password</label>
+        <input type="password" id="confirm_password" name="confirm_password" required>
       </div>
 
       <div class="form-group">
