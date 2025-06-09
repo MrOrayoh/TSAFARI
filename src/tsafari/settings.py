@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'motorbike',
 ]
 
+AUTH_USER_MODEL = 'motorbike.Driver'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
