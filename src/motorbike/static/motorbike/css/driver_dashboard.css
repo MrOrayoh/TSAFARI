@@ -1,5 +1,5 @@
 .dashboard-bg {
-  min-height: 180vh;
+  min-height: 100vh;
   background-image: url('/static/motorbike/images/welcome-bg.jpg');
   background-size: cover;
   background-position: center;
@@ -8,14 +8,19 @@
   justify-content: center;
 }
 
-.dashboard-container {
+.dashboard-container-2col {
   background-color: rgba(255, 255, 255, 0.95);
   padding: 2rem;
   border-radius: 1rem;
-  max-width: 500px;
+  max-width: 1000px;
   width: 100%;
+  display: flex;
+  gap: 2rem;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  text-align: center;
+}
+
+.dashboard-left, .dashboard-right {
+  flex: 1;
 }
 
 .dashboard-title {
@@ -27,15 +32,14 @@
 
 .dashboard-description {
   color: #4B5563;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .availability-section {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .availability-toggle {
@@ -91,7 +95,7 @@ input:checked + .slider:before {
 }
 
 .location-status {
-  margin-bottom: 1.5rem;
+  margin-top: 0.5rem;
   font-size: 0.9rem;
   color: #1F2937;
 }
@@ -100,10 +104,50 @@ input:checked + .slider:before {
   display: none;
 }
 
+.account-links {
+  margin-top: 2rem;
+}
+
+.account-links a {
+  color: #2563EB;
+  text-decoration: none;
+  display: block;
+  margin-top: 0.5rem;
+}
+
+.account-links a:hover {
+  text-decoration: underline;
+}
+
 .summary-box {
-  text-align: left;
-  margin-top: 1.5rem;
   background: #F3F4F6;
-  padding: 1rem;
+  padding: 1.5rem;
   border-radius: 0.75rem;
+  text-align: left;
+}
+
+.summary-box h3 {
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  color: #111827;
+}
+
+.summary-box p {
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.withdraw-btn {
+  margin-top: 1rem;
+  background-color: #10B981;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.withdraw-btn:hover {
+  background-color: #059669;
 }
