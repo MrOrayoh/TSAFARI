@@ -9,12 +9,10 @@
 <section class="dashboard-bg">
   <div class="dashboard-container-2col">
     
-    <!-- LEFT COLUMN -->
     <div class="dashboard-left">
       <h2 class="dashboard-title">Welcome, {{ driver_name }}</h2>
       <p class="dashboard-description">Manage your availability and visibility.</p>
 
-      <!-- Driver Info -->
       <div class="driver-info">
         <p><strong>Name:</strong> {{ driver_name }}</p>
         <p><strong>Phone:</strong> {{ driver_phone }}</p>
@@ -23,7 +21,6 @@
         <p><strong>Rating:</strong> {{ driver_rating }} ⭐</p>
       </div>
 
-      <!-- Availability -->
       <div class="availability-section">
         <label class="availability-toggle">
           <input type="checkbox" id="availabilityCheckbox" {% if is_available %}checked{% endif %} onchange="toggleAvailability(this)">
@@ -41,14 +38,12 @@
         📍 Your location is being shared with customers.
       </div>
 
-      <!-- Account Links -->
       <div class="account-links">
         <a href="{% url 'edit_account' %}">✏️ Edit Account Details</a><br>
         <a href="{% url 'mini_statements' %}">📄 View Mini Statements</a>
       </div>
     </div>
 
-    <!-- RIGHT COLUMN -->
     <div class="dashboard-right">
       <div class="summary-box">
         <h3>Today's Summary</h3>
@@ -66,33 +61,36 @@
   function toggleAvailability(checkbox) {
     const text = document.getElementById("availabilityText");
     const locationStatus = document.getElementById("locationStatus");
-
     const isChecked = checkbox.checked;
+
     text.innerHTML = `Currently: <strong class="${isChecked ? 'text-green' : ''}">${isChecked ? 'Available' : 'Unavailable'}</strong>`;
     locationStatus.classList.toggle("hidden", !isChecked);
-
-    fetch("{% url 'toggle_availability' %}", {
-      method: "POST",
-      headers: {
-        "X-CSRFToken": "{{ csrf_token }}",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({})
-    }).then(res => res.json()).then(data => {
-      if (data.status !== 'success') {
-        alert("Failed to update availability");
-        checkbox.checked = !isChecked; // revert
-        toggleAvailability(checkbox);  // retry
-      }
-    });
 
     if (isChecked) {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            console.log("Lat:", position.coords.latitude);
-            console.log("Lng:", position.coords.longitude);
-            // TODO: Send location to backend if needed
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+
+            fetch("{% url 'toggle_availability' %}", {
+              method: "POST",
+              headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                is_available: true,
+                latitude: lat,
+                longitude: lng
+              })
+            }).then(res => res.json()).then(data => {
+              if (data.status !== 'success') {
+                alert("Failed to update availability");
+                checkbox.checked = false;
+                toggleAvailability(checkbox);
+              }
+            });
           },
           (error) => {
             alert("Location access denied.");
@@ -102,7 +100,22 @@
         );
       } else {
         alert("Geolocation not supported.");
+        checkbox.checked = false;
+        toggleAvailability(checkbox);
       }
+    } else {
+      fetch("{% url 'toggle_availability' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": "{{ csrf_token }}",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ is_available: false })
+      }).then(res => res.json()).then(data => {
+        if (data.status !== 'success') {
+          alert("Failed to update availability");
+        }
+      });
     }
   }
 </script>

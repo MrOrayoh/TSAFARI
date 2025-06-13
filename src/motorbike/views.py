@@ -49,22 +49,53 @@ def driver_dashboard(request):
 
     return render(request, 'motorbike/driver_dashboard.html', context)
 
+from math import radians, sin, cos, sqrt, atan2
+
+def haversine(lat1, lon1, lat2, lon2):
+    R = 6371  # Radius of Earth in kilometers
+    dlat = radians(lat2 - lat1)
+    dlon = radians(lon2 - lon1)
+    a = sin(dlat/2)**2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon/2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    return R * c  # Distance in km
+
 def booking(request):
     location_query = request.GET.get('location', '')
-    available_drivers = []
+    lat = request.GET.get('latitude')
+    lng = request.GET.get('longitude')
 
+    drivers = Driver.objects.filter(is_available=True, latitude__isnull=False, longitude__isnull=False)
+
+    # Optional keyword filtering
     if location_query:
-        available_drivers = Driver.objects.filter(
-            Q(is_available=True),
+        drivers = drivers.filter(
             Q(stage__icontains=location_query) |
             Q(sacco__icontains=location_query)
         )
+
+    # If GPS location provided, calculate distances
+    if lat and lng:
+        try:
+            lat = float(lat)
+            lng = float(lng)
+            driver_list = []
+
+            for driver in drivers:
+                distance = haversine(lat, lng, driver.latitude, driver.longitude)
+                driver_list.append((driver, round(distance, 2)))
+
+            # Sort by nearest first
+            driver_list.sort(key=lambda x: x[1])
+            sorted_drivers = [{'driver': d, 'distance': dist} for d, dist in driver_list]
+        except ValueError:
+            sorted_drivers = [{'driver': d, 'distance': None} for d in drivers]
     else:
-        available_drivers = Driver.objects.filter(is_available=True)
+        sorted_drivers = [{'driver': d, 'distance': None} for d in drivers]
 
     return render(request, 'motorbike/booking.html', {
-        'available_drivers': available_drivers
+        'available_drivers': sorted_drivers
     })
+
 
 def choose_trip(request, driver_id):
     driver = get_object_or_404(Driver, id=driver_id)
@@ -97,13 +128,27 @@ def edit_account(request):
 def mini_statements(request):
     return render(request, 'motorbike/mini_statements.html')
 
+# motorbike/views.py
+
 @csrf_exempt
 def toggle_availability(request):
     if request.method == 'POST' and request.user.is_authenticated:
         try:
             body = json.loads(request.body)
             driver = request.user
-            driver.is_available = not driver.is_available
+
+            new_status = body.get('is_available', not driver.is_available)
+            latitude = body.get('latitude')
+            longitude = body.get('longitude')
+
+            driver.is_available = new_status
+            if new_status and latitude and longitude:
+                driver.latitude = latitude
+                driver.longitude = longitude
+            elif not new_status:
+                driver.latitude = None
+                driver.longitude = None
+
             driver.save()
             return JsonResponse({'status': 'success', 'is_available': driver.is_available})
         except Exception as e:

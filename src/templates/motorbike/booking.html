@@ -11,36 +11,109 @@
 <section class="booking-bg">
   <div class="booking-box">
     <h2>Find Nearby Transport</h2>
-    <form method="GET" action="#">
-      <label for="location">Enter Your Location:</label>
-      <input type="text" id="location" name="location" placeholder="e.g. Nairobi West" required>
+    <form method="GET" action="{% url 'booking' %}" id="bookingForm">
+      <label for="location">Enter Your Location or Driver Details:</label>
+      <input type="text" id="location" name="location" placeholder="e.g. Nairobi West, KDA 123X, John Doe" value="{{ location_query|default:'' }}">
+      <!-- Hidden fields for latitude and longitude if using GPS -->
+      <input type="hidden" id="latitude" name="latitude" value="{{ user_latitude|default:'' }}">
+      <input type="hidden" id="longitude" name="longitude" value="{{ user_longitude|default:'' }}">
       <button type="submit">Check Availability</button>
+      <!-- You can still have a manual button if desired -->
+      <!-- <button type="button" onclick="manualGetLocation()">Use My Current Location</button> -->
     </form>
 
     <div class="transport-results">
       <h3>Available Drivers</h3>
 
-      <!-- Driver Card Loop (example static, replace with dynamic data) -->
       <div class="driver-grid">
-        {% for driver in available_drivers %}
-        <div class="driver-card">
-          <img src="{{ driver.photo_url|default:'/static/motorbike/images/default_driver.png' }}" alt="Driver Photo" class="driver-photo">
-          <h4>{{ driver.name }}</h4>
-          <p><strong>Transport:</strong> {{ driver.role|title }}</p>
-          <p><strong>Plate:</strong> {{ driver.number_plate }}</p>
-          <p><strong>Sacco:</strong> {{ driver.sacco }}</p>
-          <p><strong>Stage:</strong> {{ driver.stage }}</p>
-          <p><strong>Rating:</strong> {{ driver.rating|default:"4.5" }}/5 ⭐</p>
-          <p><strong>Distance:</strong> ~2.3 km away</p>
-          <form action="{% url 'choose_trip' driver.id %}" method="GET">
-            <button type="submit" class="select-btn">Select</button>
-          </form>
-        </div>
+        {% for item in available_drivers %}
+          {% with driver=item.driver distance=item.distance %}
+            <div class="driver-card">
+              <img src="{% if driver.profile_picture %}{{ driver.profile_picture.url }}{% else %}{% static 'motorbike/images/default_driver.png' %}{% endif %}" alt="{{ driver.full_name }} photo" class="driver-photo">
+              <h4>{{ driver.full_name }}</h4>
+              <p><strong>Transport:</strong> {{ driver.get_role_display|default:driver.role|title }}</p>
+              <p><strong>Plate:</strong> {{ driver.number_plate|default:'N/A' }}</p>
+              <p><strong>Sacco:</strong> {{ driver.sacco|default:'N/A' }}</p>
+              <p><strong>Stage:</strong> {{ driver.stage|default:'N/A' }}</p>
+              <p><strong>Phone:</strong> {{ driver.phone }}</p>
+              <p><strong>Rating:</strong> {{ driver.rating|default:"N/A" }} {% if driver.rating %}⭐{% endif %}</p> {# Assuming rating is a field on driver model #}
+              {% if distance is not None %}
+                <p><strong>Distance:</strong> ~{{ distance }} km away</p>
+              {% endif %}
+              <form action="{% url 'choose_trip' driver.id %}" method="GET">
+                <button type="submit" class="select-btn">Select</button>
+              </form>
+            </div>
+          {% endwith %}
         {% empty %}
-        <p>No available drivers around your location at this moment.</p>
+        <p>No available drivers matching your criteria at this moment. {% if not location_query and not user_latitude %}Try searching for a location or allowing location access.{% else %}Try a broader search.{% endif %}</p>
         {% endfor %}
       </div>
     </div>
   </div>
 </section>
+
+<script>
+  // Only run this once per page load
+  window.addEventListener('load', () => {
+    const url = new URL(window.location.href);
+    const hasLat = url.searchParams.has('latitude') && url.searchParams.get('latitude') !== '';
+    const hasLng = url.searchParams.has('longitude') && url.searchParams.get('longitude') !== '';
+
+    // Check if the location input is also empty, to avoid re-fetching if user manually cleared GPS and searched by text
+    const locationInput = document.getElementById('location');
+    const hasLocationQuery = locationInput && locationInput.value.trim() !== '';
+
+    if (!hasLat || !hasLng) { // Only attempt to get location if not already present or if user hasn't typed a location
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+
+            // Update hidden fields
+            const latField = document.getElementById('latitude');
+            const lngField = document.getElementById('longitude');
+            if (latField) latField.value = lat;
+            if (lngField) lngField.value = lng;
+            
+            // Append coordinates to URL and reload
+            // Check if we are not in an infinite loop (e.g. if geolocation keeps failing silently and params are not set)
+            // A simple way is to check if we already tried to set them in this session.
+            if (!sessionStorage.getItem('geolocationAttempted')) {
+                sessionStorage.setItem('geolocationAttempted', 'true');
+                url.searchParams.set('latitude', lat);
+                url.searchParams.set('longitude', lng);
+                // If user also typed a location, keep it. Otherwise, they might want to search by GPS only.
+                // For now, the provided script reloads with GPS, potentially overriding text search if it was empty.
+                window.location.href = url.toString();
+            } else {
+                // If already attempted, maybe just fill the fields and let user submit manually
+                // or remove the sessionStorage item if they navigate away and back.
+                console.log("Geolocation already attempted in this session. Populating fields.");
+            }
+          },
+          (error) => {
+            console.warn("Location access denied or failed.", error);
+            // Optionally notify user, e.g., by showing a message on the page
+            // alert("Could not get your location. Please enter it manually or check your browser settings.");
+            sessionStorage.removeItem('geolocationAttempted'); // Allow retry on next load if it failed
+          }
+        );
+      } else {
+        // alert("Your browser doesn't support geolocation. Please enter your location manually.");
+        console.warn("Geolocation is not supported by this browser.");
+        sessionStorage.removeItem('geolocationAttempted');
+      }
+    } else {
+        // Clear the flag if page loaded with lat/lng from the start
+        sessionStorage.removeItem('geolocationAttempted');
+    }
+  });
+
+  // Clear the flag when the user navigates away or closes the tab
+  window.addEventListener('beforeunload', () => {
+      sessionStorage.removeItem('geolocationAttempted');
+  });
+</script>
 {% endblock %}

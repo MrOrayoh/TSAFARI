@@ -1,3 +1,5 @@
+# motorbike/models.py
+
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
@@ -15,9 +17,9 @@ class DriverManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
-        if extra_fields.get('is_staff') is not True:
+        if not extra_fields.get('is_staff'):
             raise ValueError('Superuser must have is_staff=True.')
-        if extra_fields.get('is_superuser') is not True:
+        if not extra_fields.get('is_superuser'):
             raise ValueError('Superuser must have is_superuser=True.')
 
         return self.create_user(email, password, **extra_fields)
@@ -40,9 +42,11 @@ class Driver(AbstractBaseUser, PermissionsMixin):
 
     rating = models.FloatField(default=4.5)
     photo = models.ImageField(upload_to='driver_photos/', null=True, blank=True)
-    is_available = models.BooleanField(default=False)
-
     profile_picture = models.ImageField(upload_to='drivers/', default='default_driver.png', blank=True, null=True)
+
+    is_available = models.BooleanField(default=False)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -57,15 +61,12 @@ class Driver(AbstractBaseUser, PermissionsMixin):
 
     @property
     def photo_url(self):
-        if self.photo:
-            return self.photo.url
-        return ''
+        return self.photo.url if self.photo else ''
 
     groups = models.ManyToManyField(
         'auth.Group',
         verbose_name='groups',
         blank=True,
-        help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
         related_name="driver_set",
         related_query_name="driver",
     )
@@ -73,16 +74,16 @@ class Driver(AbstractBaseUser, PermissionsMixin):
         'auth.Permission',
         verbose_name='user permissions',
         blank=True,
-        help_text='Specific permissions for this user.',
         related_name="driver_set",
         related_query_name="driver",
     )
 
 class Booking(models.Model):
+    customer_name = models.CharField(max_length=255) # 
+    pickup_location = models.CharField(max_length=255)
+    destination = models.CharField(max_length=255)
     driver = models.ForeignKey(Driver, on_delete=models.CASCADE)
-    origin = models.CharField(max_length=100)
-    destination = models.CharField(max_length=100)
-    customer_phone = models.CharField(max_length=15)
+    created_at = models.DateTimeField(auto_now_add=True) #
     timestamp = models.DateTimeField(auto_now_add=True)
     is_confirmed = models.BooleanField(default=False)
 
